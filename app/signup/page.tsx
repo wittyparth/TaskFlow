@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -9,6 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, ArrowRight, Github, Mail, Eye, EyeOff, Check, X } from "lucide-react"
+import { supabase } from "@/lib/supabase"
+import { useAnalytics } from "@/hooks/use-analytics"
 
 export default function SignUpPage() {
   const [currentStep, setCurrentStep] = useState(1)
@@ -25,6 +28,9 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const router = useRouter()
+  const { track } = useAnalytics()
 
   const passwordRequirements = [
     { text: "At least 8 characters", met: formData.password.length >= 8 },
@@ -48,18 +54,70 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Sign up attempt:", formData)
+    try {
+      console.log('Attempting signup with:', formData.email)
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: `${formData.firstName} ${formData.lastName}`,
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            company_name: formData.companyName,
+            team_size: formData.teamSize,
+            role: formData.role,
+          }
+        }
+      })
+
+      if (error) {
+        console.error('Supabase signup error:', error)
+        setError(error.message)
+        return
+      }
+
+      console.log('Signup successful:', data)
+      
       // Redirect to email verification
-      window.location.href = "/verify-email"
-    }, 1000)
+      router.push("/verify-email?email=" + encodeURIComponent(formData.email))
+    } catch (err) {
+      console.error('Signup catch error:', err)
+      setError("An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleSocialSignUp = (provider: string) => {
-    console.log(`Signing up with ${provider}`)
-    // Implement social sign up
+  const handleSocialSignUp = async (provider: 'google' | 'github') => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      })
+
+      if (error) {
+        setError(error.message)
+        track('social_signup_failed', { 
+          provider,
+          error: error.message 
+        })
+        return
+      }
+
+      track('social_signup_attempted', { provider })
+    } catch (err) {
+      setError("Failed to sign up with " + provider)
+      track('social_signup_error', { 
+        provider,
+        error: 'unexpected_error' 
+      })
+    }
   }
 
   const isStep1Valid = formData.firstName && formData.lastName && formData.email

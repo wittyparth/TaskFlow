@@ -2,205 +2,260 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { CheckCircle, ArrowRight, Github, Mail, Eye, EyeOff } from "lucide-react"
+import { supabase } from "@/lib/supabase"
+import { useAnalytics } from "@/hooks/use-analytics"
 
 export default function SignInPage() {
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const router = useRouter()
+  const { track } = useAnalytics()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Sign in attempt:", formData)
-      // Set auth token cookie
-      document.cookie = 'authToken=demo_token_' + Date.now() + '; path=/; max-age=' + (60 * 60 * 24 * 7) // 7 days
-      // Redirect to dashboard after successful signin
-      window.location.href = "/dashboard"
-    }, 1000)
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      })
+
+      if (error) {
+        console.error('Supabase signin error:', error)
+        setError(error.message)
+        return
+      }
+
+      console.log('Signin successful:', data)
+      
+      // Track signin event
+      track('user_signed_in', {
+        method: 'email',
+        user_email: formData.email,
+      })
+      
+      // Redirect to dashboard
+      router.push("/dashboard")
+    } catch (err) {
+      console.error('Signin catch error:', err)
+      setError("An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleSocialSignIn = (provider: string) => {
-    console.log(`Signing in with ${provider}`)
-    // Implement social sign in
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      })
+
+      if (error) {
+        console.error('Google signin error:', error)
+        setError(error.message)
+        return
+      }
+
+      // Track Google signin
+      track('user_signed_in', {
+        method: 'google'
+      })
+    } catch (err) {
+      console.error('Google signin catch error:', err)
+      setError("Google sign in failed")
+    }
+  }
+
+  const handleGitHubSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      })
+
+      if (error) {
+        console.error('GitHub signin error:', error)
+        setError(error.message)
+        return
+      }
+
+      // Track GitHub signin
+      track('user_signed_in', {
+        method: 'github'
+      })
+    } catch (err) {
+      console.error('GitHub signin catch error:', err)
+      setError("GitHub sign in failed")
+    }
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between max-w-6xl">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-5 h-5 text-primary-foreground" />
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
+          <div className="flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">TaskFlow Pro</span>
-          </Link>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">Don't have an account?</span>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/signup">Sign Up</Link>
-            </Button>
           </div>
+          <h1 className="text-3xl font-bold text-foreground">Welcome back</h1>
+          <p className="text-muted-foreground mt-2">Sign in to your account to continue</p>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-foreground">Welcome back</h1>
-            <p className="text-muted-foreground mt-2">Sign in to your TaskFlow Pro account</p>
-          </div>
+        <Card className="border-border shadow-lg">
+          <CardHeader className="space-y-1 pb-6">
+            <CardTitle className="text-2xl text-center">Sign In</CardTitle>
+            <CardDescription className="text-center">
+              Enter your credentials to access your account
+            </CardDescription>
+          </CardHeader>
 
-          <Card className="border-border shadow-lg">
-            <CardHeader className="space-y-1 pb-6">
-              <CardTitle className="text-2xl text-center">Sign In</CardTitle>
-              <CardDescription className="text-center">
-                Enter your credentials to access your account
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Social Sign In Buttons */}
-              <div className="space-y-3">
-                <Button
-                  variant="outline"
-                  className="w-full h-11"
-                  onClick={() => handleSocialSignIn("google")}
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Continue with Google
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full h-11"
-                  onClick={() => handleSocialSignIn("github")}
-                >
-                  <Github className="w-4 h-4 mr-2" />
-                  Continue with GitHub
-                </Button>
+          <CardContent className="space-y-4">
+            {error && (
+              <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-foreground font-medium">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="h-11"
+                  required
+                />
               </div>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <Separator className="w-full" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-                </div>
-              </div>
-
-              {/* Email/Password Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-foreground font-medium">Password</Label>
+                <div className="relative">
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="john@company.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="h-11 pr-10"
                     required
-                    className="h-11"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      required
-                      className="h-11 pr-10"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-11 px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <input type="checkbox" id="remember" className="rounded" />
-                    <Label htmlFor="remember" className="text-sm font-normal">
-                      Remember me
-                    </Label>
-                  </div>
-                  <Link 
-                    href="/forgot-password" 
-                    className="text-sm text-primary hover:underline"
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-0 top-0 h-11 px-3 hover:bg-transparent"
                   >
-                    Forgot password?
-                  </Link>
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <Eye className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </Button>
                 </div>
+              </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full h-11" 
-                  disabled={isLoading}
+              <div className="flex justify-end">
+                <Link 
+                  href="/forgot-password" 
+                  className="text-sm text-primary hover:text-primary/80 hover:underline"
                 >
-                  {isLoading ? (
-                    "Signing in..."
-                  ) : (
-                    <>
-                      Sign In
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </>
-                  )}
-                </Button>
-              </form>
-
-              <div className="text-center text-sm">
-                <span className="text-muted-foreground">Don't have an account? </span>
-                <Link href="/signup" className="text-primary hover:underline font-medium">
-                  Sign up
+                  Forgot password?
                 </Link>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-6 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
-            <div className="flex space-x-6 mb-4 md:mb-0">
-              <Link href="#" className="hover:text-foreground transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="#" className="hover:text-foreground transition-colors">
-                Terms of Service
-              </Link>
-              <Link href="#" className="hover:text-foreground transition-colors">
-                Support
-              </Link>
+              <Button 
+                type="submit" 
+                className="w-full h-11 font-medium"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Signing in...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    Sign in
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                )}
+              </Button>
+            </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
             </div>
-            <div>© 2024 TaskFlow Pro. All rights reserved.</div>
-          </div>
-        </div>
-      </footer>
+
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                onClick={handleGoogleSignIn}
+                className="h-11"
+                disabled={isLoading}
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Google
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleGitHubSignIn}
+                className="h-11"
+                disabled={isLoading}
+              >
+                <Github className="w-4 h-4 mr-2" />
+                GitHub
+              </Button>
+            </div>
+
+            <div className="text-center pt-4">
+              <span className="text-sm text-muted-foreground">
+                Don't have an account?{" "}
+                <Link 
+                  href="/signup" 
+                  className="text-primary hover:text-primary/80 font-medium hover:underline"
+                >
+                  Sign up
+                </Link>
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

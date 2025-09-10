@@ -50,12 +50,12 @@ const workspaceItems = [
 
 const settingsItems = [
   {
-    title: "Billing",
-    href: "/billing",
+    title: "Subscription",
+    href: "/subscription",
     icon: CreditCard,
   },
   {
-    title: "Settings",
+    title: "Settings", 
     href: "/settings",
     icon: Settings,
   },
