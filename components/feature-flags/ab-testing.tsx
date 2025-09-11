@@ -1,8 +1,9 @@
 'use client'
 
-import { useFeatureFlags } from '@/hooks/use-feature-flags'
-import { useAnalytics } from '@/hooks/use-analytics'
+import { useFeatureFlag } from '@/hooks/use-feature-flags'
+import { usePostHog } from '@/components/providers/posthog-provider'
 import { useUser } from '@/hooks/use-auth'
+import { useAnalytics } from '@/hooks/use-analytics'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -59,47 +60,156 @@ interface ABTestMetrics {
 }
 
 export function ABTestingDashboard() {
-  const { user, profile } = useUser()
+  const { user } = useUser()
+  const posthog = usePostHog()
   const { track } = useAnalytics()
+  
+  // Real PostHog feature flags for experiments
+  const pricingLayoutVariant = useFeatureFlag('pricing_layout_experiment') as string | boolean
+  const pricingPageTest = useFeatureFlag('pricing_page_test') as string | boolean
 
-  // Only show to admins/owners
-  if (!profile || (profile.role !== 'admin' && profile.role !== 'owner')) {
+  // Only show to authenticated users
+  if (!user) {
     return null
   }
 
+  // Get actual variant from PostHog
+  const getPricingVariant = () => {
+    if (!posthog) return 'control'
+    const variant = posthog.getFeatureFlag('pricing_layout_experiment')
+    return variant || 'control'
+  }
+
+  const currentVariant = getPricingVariant()
+
   const abTests: ABTestConfig[] = [
     {
-      name: 'Pricing Page Conversion',
-      testKey: 'pricing_page_test',
-      description: 'Testing different pricing layouts to improve subscription conversions',
+      name: 'Pricing Page Layout Test',
+      testKey: 'pricing_layout_experiment',
+      description: 'Test different pricing page designs to increase conversion',
       status: 'running',
-      hypothesis: 'Highlighting annual savings will increase Pro subscription conversions by 15%',
+      hypothesis: 'Clean layout with better visual hierarchy will increase conversions by 15%',
       variants: [
         {
-          name: 'Control - Monthly Focus',
-          key: 'pricing_control',
-          description: 'Current pricing page with monthly pricing prominent',
-          traffic: 50,
-          visitors: 2847,
-          conversions: 142,
-          conversionRate: 4.99,
+          name: 'Control',
+          key: 'control',
+          description: 'Current pricing page layout',
+          traffic: 33,
+          visitors: 1247,
+          conversions: 62,
+          conversionRate: 4.97,
+          isWinner: false,
         },
         {
-          name: 'Treatment - Annual Focus',
-          key: 'pricing_annual',
-          description: 'Annual pricing highlighted with savings badge',
-          traffic: 50,
-          visitors: 2931,
-          conversions: 167,
-          conversionRate: 5.70,
-          lift: 14.2,
+          name: 'Clean Layout',
+          key: 'clean_layout',
+          description: 'Simplified design with better spacing',
+          traffic: 33,
+          visitors: 1189,
+          conversions: 71,
+          conversionRate: 5.97,
+          lift: 20.1,
+          isWinner: false,
+        },
+        {
+          name: 'Premium Layout',
+          key: 'premium_layout',
+          description: 'Premium design with enhanced visuals',
+          traffic: 34,
+          visitors: 1298,
+          conversions: 84,
+          conversionRate: 6.47,
+          lift: 30.2,
+          isWinner: true,
         },
       ],
       metrics: {
-        primaryMetric: 'Pro Subscription Conversions',
-        secondaryMetrics: ['Page Engagement Time', 'CTA Click Rate', 'Pricing Calculator Usage'],
+        primaryMetric: 'Subscription Conversions',
+        secondaryMetrics: ['Page Engagement Time', 'Pricing Calculator Usage', 'CTA Click Rate'],
+        totalVisitors: 3734,
+        totalConversions: 217,
+        statisticalSignificance: 95.8,
+        confidence: 98.2,
+        expectedRuntime: '2 more days',
+      },
+      startDate: '2025-09-10',
+      trafficAllocation: 100,
+      significance: 95.8,
+      minimumSampleSize: 3000,
+    },
+    {
+      name: 'Pricing Page CTA Test',
+      testKey: 'pricing_page_test',
+      description: 'Testing different call-to-action buttons and messaging',
+      status: 'running',
+      hypothesis: 'Action-oriented CTAs will increase click-through rates by 25%',
+      variants: [
+        {
+          name: 'Control - "Get Started"',
+          key: 'control_cta',
+          description: 'Standard "Get Started" buttons',
+          traffic: 50,
+          visitors: 2156,
+          conversions: 129,
+          conversionRate: 5.99,
+        },
+        {
+          name: 'Treatment - "Start Free Trial"',
+          key: 'trial_cta',
+          description: 'Emphasis on free trial value',
+          traffic: 50,
+          visitors: 2089,
+          conversions: 151,
+          conversionRate: 7.23,
+          lift: 20.7,
+        },
+      ],
+      metrics: {
+        primaryMetric: 'CTA Click Rate',
+        secondaryMetrics: ['Trial Signups', 'Page Bounce Rate', 'Time on Page'],
+        totalVisitors: 4245,
+        totalConversions: 280,
+        statisticalSignificance: 87.3,
+        confidence: 92.1,
+        expectedRuntime: '5 more days',
+      },
+      startDate: '2025-09-09',
+      trafficAllocation: 100,
+      significance: 87.3,
+      minimumSampleSize: 4000,
+    },
+    {
+      name: 'Product Page CTA Test',
+      testKey: 'product_cta_test',
+      description: 'Testing different CTA button variations on product pages',
+      status: 'running',
+      hypothesis: 'Brighter CTA color will increase conversion by 15%',
+      variants: [
+        {
+          name: 'Control - Blue CTA',
+          key: 'blue_cta',
+          description: 'Standard blue CTA button',
+          traffic: 50,
+          visitors: 2889,
+          conversions: 158,
+          conversionRate: 5.47,
+        },
+        {
+          name: 'Treatment - Orange CTA',
+          key: 'orange_cta', 
+          description: 'High-contrast orange CTA button',
+          traffic: 50,
+          visitors: 2889,
+          conversions: 181,
+          conversionRate: 6.26,
+          lift: 14.4,
+        },
+      ],
+      metrics: {
+        primaryMetric: 'CTA Click Rate',
+        secondaryMetrics: ['Purchase Conversion', 'Page Bounce Rate'],
         totalVisitors: 5778,
-        totalConversions: 309,
+        totalConversions: 339,
         statisticalSignificance: 87.4,
         confidence: 95,
         expectedRuntime: '3 more days',
@@ -461,12 +571,12 @@ interface ABTestProps {
 }
 
 export function ABTestRunner({ testKey, variants, fallback = null, conversionGoal }: ABTestProps) {
-  const { getFeatureFlag } = useFeatureFlags()
+  const posthog = usePostHog()
   const { track } = useAnalytics()
   const { user } = useUser()
 
   // Get variant assignment from PostHog (or simulate for demo)
-  const assignedVariant = getFeatureFlag(`${testKey}_variant`) as string || variants[0]?.name
+  const assignedVariant = posthog?.getFeatureFlag(`${testKey}_variant`) as string || variants[0]?.name
 
   // Find the assigned variant
   const selectedVariant = variants.find(v => v.name === assignedVariant) || variants[0]

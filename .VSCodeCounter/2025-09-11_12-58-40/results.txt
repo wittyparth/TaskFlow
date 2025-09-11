@@ -1,0 +1,181 @@
+Date : 2025-09-11 12:58:40
+Directory : c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks
+Total : 105 files,  23161 codes, 586 comments, 1740 blanks, all 25487 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| TypeScript JSX     |         71 |     14,279 |        410 |        971 |     15,660 |
+| JSON               |          3 |      5,518 |          0 |          3 |      5,521 |
+| Markdown           |         12 |      1,964 |          1 |        553 |      2,518 |
+| TypeScript         |         11 |        846 |         71 |        138 |      1,055 |
+| MS SQL             |          2 |        392 |         99 |         60 |        551 |
+| PostCSS            |          1 |        120 |          0 |          6 |        126 |
+| JSON with Comments |          2 |         29 |          0 |          2 |         31 |
+| JavaScript         |          2 |          8 |          2 |          4 |         14 |
+| Properties         |          1 |          5 |          3 |          3 |         11 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                   | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                      |        105 |     23,161 |        586 |      1,740 |     25,487 |
+| . (Files)                                                                                              |         24 |      7,989 |        115 |        631 |      8,735 |
+| app                                                                                                    |         38 |      9,436 |        278 |        487 |     10,201 |
+| app (Files)                                                                                            |          3 |        698 |          9 |         34 |        741 |
+| app\(dashboard)                                                                                        |         30 |      7,422 |        239 |        340 |      8,001 |
+| app\(dashboard) (Files)                                                                                |          2 |        124 |          2 |          7 |        133 |
+| app\(dashboard)\admin                                                                                  |          1 |          4 |          0 |          2 |          6 |
+| app\(dashboard)\analytics                                                                              |          2 |        470 |         10 |         22 |        502 |
+| app\(dashboard)\billing                                                                                |          4 |      1,136 |         15 |         64 |      1,215 |
+| app\(dashboard)\billing (Files)                                                                        |          2 |        350 |          7 |         21 |        378 |
+| app\(dashboard)\billing\analytics                                                                      |          1 |        367 |          2 |         18 |        387 |
+| app\(dashboard)\billing\subscription                                                                   |          1 |        419 |          6 |         25 |        450 |
+| app\(dashboard)\dashboard                                                                              |          1 |        400 |         14 |         22 |        436 |
+| app\(dashboard)\notifications                                                                          |          1 |        322 |          1 |         17 |        340 |
+| app\(dashboard)\pricing                                                                                |          1 |        332 |          7 |         18 |        357 |
+| app\(dashboard)\projects                                                                               |          4 |      1,350 |        159 |         43 |      1,552 |
+| app\(dashboard)\projects (Files)                                                                       |          2 |        392 |        154 |         16 |        562 |
+| app\(dashboard)\projects\[id]                                                                          |          2 |        958 |          5 |         27 |        990 |
+| app\(dashboard)\projects\[id] (Files)                                                                  |          1 |        721 |          3 |         17 |        741 |
+| app\(dashboard)\projects\[id]\timeline                                                                 |          1 |        237 |          2 |         10 |        249 |
+| app\(dashboard)\search                                                                                 |          2 |        320 |          5 |         16 |        341 |
+| app\(dashboard)\settings                                                                               |          4 |      1,365 |         11 |         61 |      1,437 |
+| app\(dashboard)\settings (Files)                                                                       |          2 |        736 |         11 |         42 |        789 |
+| app\(dashboard)\settings\automation                                                                    |          1 |        320 |          0 |         10 |        330 |
+| app\(dashboard)\settings\workspace                                                                     |          1 |        309 |          0 |          9 |        318 |
+| app\(dashboard)\subscription                                                                           |          1 |        258 |         10 |         18 |        286 |
+| app\(dashboard)\tasks                                                                                  |          2 |        257 |          0 |         13 |        270 |
+| app\(dashboard)\team                                                                                   |          5 |      1,084 |          5 |         37 |      1,126 |
+| app\(dashboard)\team (Files)                                                                           |          2 |        470 |          5 |         20 |        495 |
+| app\(dashboard)\team\members                                                                           |          2 |        342 |          0 |          8 |        350 |
+| app\(dashboard)\team\permissions                                                                       |          1 |        272 |          0 |          9 |        281 |
+| app\forgot-password                                                                                    |          1 |        173 |          4 |         14 |        191 |
+| app\reset-password                                                                                     |          1 |        340 |         14 |         29 |        383 |
+| app\signin                                                                                             |          1 |        232 |          4 |         25 |        261 |
+| app\signup                                                                                             |          1 |        442 |          8 |         31 |        481 |
+| app\verify-email                                                                                       |          1 |        129 |          0 |         14 |        143 |
+| components                                                                                             |         34 |      4,963 |        132 |        490 |      5,585 |
+| components (Files)                                                                                     |          5 |        930 |         21 |         82 |      1,033 |
+| components\analytics                                                                                   |          2 |         96 |          4 |         19 |        119 |
+| components\examples                                                                                    |          1 |        180 |          7 |         19 |        206 |
+| components\feature-flags                                                                               |          8 |      2,720 |         93 |        222 |      3,035 |
+| components\providers                                                                                   |          1 |         55 |          7 |         13 |         75 |
+| components\ui                                                                                          |         17 |        982 |          0 |        135 |      1,117 |
+| hooks                                                                                                  |          4 |        427 |         44 |         94 |        565 |
+| lib                                                                                                    |          5 |        346 |         17 |         38 |        401 |
++--------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                               | language           | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\.env                                               | Properties         |          5 |          3 |          3 |         11 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\.eslintrc.json                                     | JSON with Comments |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\ARCHITECTURE.md                                    | Markdown           |          0 |          0 |          1 |          1 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\AUTHENTICATION_FIXED.md                            | Markdown           |          0 |          0 |          1 |          1 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\AUTHENTICATION_IMPLEMENTATION.md                   | Markdown           |          0 |          0 |          1 |          1 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\FEATURE_DOCUMENTATION.md                           | Markdown           |        259 |          0 |         83 |        342 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\IMPLEMENTATION_GUIDE.md                            | Markdown           |        342 |          1 |        100 |        443 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\MANAGER_PRESENTATION_GUIDE.md                      | Markdown           |        115 |          0 |         40 |        155 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\POSTHOG_CONFIGURATION_GUIDE.md                     | Markdown           |        534 |          0 |        122 |        656 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\POSTHOG_FEATURES_REPORT.md                         | Markdown           |          0 |          0 |          1 |          1 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\README.md                                          | Markdown           |         23 |          0 |         14 |         37 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\SETUP_GUIDE.md                                     | Markdown           |        210 |          0 |         53 |        263 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\TECHNICAL_IMPLEMENTATION_SUMMARY.md                | Markdown           |        327 |          0 |         85 |        412 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\URGENT_FIX_GUIDE.md                                | Markdown           |        154 |          0 |         52 |        206 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\admin\page.tsx                     | TypeScript JSX     |          4 |          0 |          2 |          6 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\analytics\loading.tsx              | TypeScript JSX     |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\analytics\page.tsx                 | TypeScript JSX     |        467 |         10 |         21 |        498 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\billing\analytics\page.tsx         | TypeScript JSX     |        367 |          2 |         18 |        387 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\billing\loading.tsx                | TypeScript JSX     |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\billing\page.tsx                   | TypeScript JSX     |        347 |          7 |         20 |        374 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\billing\subscription\page.tsx      | TypeScript JSX     |        419 |          6 |         25 |        450 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\dashboard\page.tsx                 | TypeScript JSX     |        400 |         14 |         22 |        436 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\layout.tsx                         | TypeScript JSX     |        121 |          2 |          6 |        129 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\loading.tsx                        | TypeScript JSX     |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\notifications\page.tsx             | TypeScript JSX     |        322 |          1 |         17 |        340 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\pricing\page.tsx                   | TypeScript JSX     |        332 |          7 |         18 |        357 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\projects\[id]\page.tsx             | TypeScript JSX     |        721 |          3 |         17 |        741 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\projects\[id]\timeline\page.tsx    | TypeScript JSX     |        237 |          2 |         10 |        249 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\projects\loading.tsx               | TypeScript JSX     |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\projects\page.tsx                  | TypeScript JSX     |        389 |        154 |         15 |        558 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\search\loading.tsx                 | TypeScript JSX     |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\search\page.tsx                    | TypeScript JSX     |        317 |          5 |         15 |        337 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\settings\automation\page.tsx       | TypeScript JSX     |        320 |          0 |         10 |        330 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\settings\loading.tsx               | TypeScript JSX     |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\settings\page.tsx                  | TypeScript JSX     |        733 |         11 |         41 |        785 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\settings\workspace\page.tsx        | TypeScript JSX     |        309 |          0 |          9 |        318 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\subscription\page.tsx              | TypeScript JSX     |        258 |         10 |         18 |        286 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\tasks\loading.tsx                  | TypeScript JSX     |         46 |          0 |          4 |         50 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\tasks\page.tsx                     | TypeScript JSX     |        211 |          0 |          9 |        220 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\team\loading.tsx                   | TypeScript JSX     |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\team\members\loading.tsx           | TypeScript JSX     |          3 |          0 |          1 |          4 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\team\members\page.tsx              | TypeScript JSX     |        339 |          0 |          7 |        346 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\team\page.tsx                      | TypeScript JSX     |        467 |          5 |         19 |        491 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\(dashboard)\team\permissions\page.tsx          | TypeScript JSX     |        272 |          0 |          9 |        281 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\forgot-password\page.tsx                       | TypeScript JSX     |        173 |          4 |         14 |        191 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\globals.css                                    | PostCSS            |        120 |          0 |          6 |        126 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\layout.tsx                                     | TypeScript JSX     |         36 |          0 |          3 |         39 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\page.tsx                                       | TypeScript JSX     |        542 |          9 |         25 |        576 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\reset-password\page.tsx                        | TypeScript JSX     |        340 |         14 |         29 |        383 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\signin\page.tsx                                | TypeScript JSX     |        232 |          4 |         25 |        261 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\signup\page.tsx                                | TypeScript JSX     |        442 |          8 |         31 |        481 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\app\verify-email\page.tsx                          | TypeScript JSX     |        129 |          0 |         14 |        143 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components.json                                    | JSON               |         22 |          0 |          1 |         23 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\admin-dashboard.tsx                     | TypeScript JSX     |        340 |         10 |         20 |        370 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\analytics\analytics-wrapper.tsx         | TypeScript JSX     |         44 |          1 |          9 |         54 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\analytics\page-view-tracker.tsx         | TypeScript JSX     |         52 |          3 |         10 |         65 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\examples\analytics-examples.tsx         | TypeScript JSX     |        180 |          7 |         19 |        206 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\feature-flags\ab-testing.tsx            | TypeScript JSX     |        471 |         13 |         29 |        513 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\feature-flags\advanced-feature-gate.tsx | TypeScript JSX     |        171 |         32 |         47 |        250 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\feature-flags\feature-gate.tsx          | TypeScript JSX     |         51 |          0 |         15 |         66 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\feature-flags\gradual-rollout.tsx       | TypeScript JSX     |        327 |          7 |         19 |        353 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\feature-flags\kill-switch.tsx           | TypeScript JSX     |        205 |          6 |         21 |        232 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\feature-flags\personalization.tsx       | TypeScript JSX     |        465 |         13 |         29 |        507 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\feature-flags\session-recording.tsx     | TypeScript JSX     |        496 |         14 |         32 |        542 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\feature-flags\surveys.tsx               | TypeScript JSX     |        534 |          8 |         30 |        572 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\mention-system.tsx                      | TypeScript JSX     |        118 |          0 |         12 |        130 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\navigation.tsx                          | TypeScript JSX     |        139 |          0 |         14 |        153 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\providers\posthog-provider.tsx          | TypeScript JSX     |         55 |          7 |         13 |         75 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\theme-provider.tsx                      | TypeScript JSX     |         13 |          0 |          4 |         17 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\alert-dialog.tsx                     | TypeScript JSX     |        127 |          0 |         15 |        142 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\avatar.tsx                           | TypeScript JSX     |         44 |          0 |          7 |         51 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\badge.tsx                            | TypeScript JSX     |         31 |          0 |          6 |         37 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\button.tsx                           | TypeScript JSX     |         52 |          0 |          6 |         58 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\card.tsx                             | TypeScript JSX     |         68 |          0 |          9 |         77 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\checkbox.tsx                         | TypeScript JSX     |         26 |          0 |          5 |         31 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\dialog.tsx                           | TypeScript JSX     |        109 |          0 |         14 |        123 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\dropdown-menu.tsx                    | TypeScript JSX     |        183 |          0 |         19 |        202 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\input.tsx                            | TypeScript JSX     |         19 |          0 |          4 |         23 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\label.tsx                            | TypeScript JSX     |         21 |          0 |          6 |         27 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\progress.tsx                         | TypeScript JSX     |         24 |          0 |          5 |         29 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\select.tsx                           | TypeScript JSX     |        146 |          0 |         14 |        160 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\separator.tsx                        | TypeScript JSX     |         27 |          0 |          5 |         32 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\skeleton.tsx                         | TypeScript JSX     |         13 |          0 |          3 |         16 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\switch.tsx                           | TypeScript JSX     |         25 |          0 |          5 |         30 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\tabs.tsx                             | TypeScript JSX     |         48 |          0 |          8 |         56 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\ui\textarea.tsx                         | TypeScript JSX     |         19 |          0 |          4 |         23 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\components\upgrade-button.tsx                      | TypeScript JSX     |        320 |         11 |         32 |        363 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\hooks\use-analytics.ts                             | TypeScript         |        111 |         13 |         23 |        147 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\hooks\use-auth.ts                                  | TypeScript         |        134 |          6 |         24 |        164 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\hooks\use-feature-flags.ts                         | TypeScript         |         82 |          9 |         23 |        114 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\hooks\use-surveys.ts                               | TypeScript         |        100 |         16 |         24 |        140 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\lib\auth.ts                                        | TypeScript         |          0 |          0 |          1 |          1 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\lib\billing.ts                                     | TypeScript         |        151 |         12 |         24 |        187 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\lib\posthog.ts                                     | TypeScript         |         31 |          4 |          7 |         42 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\lib\supabase.ts                                    | TypeScript         |        159 |          1 |          4 |        164 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\lib\utils.ts                                       | TypeScript         |          5 |          0 |          2 |          7 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\middleware.ts                                      | TypeScript         |         11 |         10 |          4 |         25 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\next.config.mjs                                    | JavaScript         |          2 |          1 |          2 |          5 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\package-lock.json                                  | JSON               |      5,410 |          0 |          1 |      5,411 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\package.json                                       | JSON               |         86 |          0 |          1 |         87 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\postcss.config.mjs                                 | JavaScript         |          6 |          1 |          2 |          9 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\supabase-schema-fixed.sql                          | MS SQL             |        196 |         48 |         29 |        273 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\supabase-schema.sql                                | MS SQL             |        196 |         51 |         31 |        278 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\tailwind.config.ts                                 | TypeScript         |         62 |          0 |          2 |         64 |
+| c:\Users\MunakalaParthaSaradh\Desktop\Posthog\tasks\tsconfig.json                                      | JSON with Comments |         26 |          0 |          1 |         27 |
+| Total                                                                                                  |                    |     23,161 |        586 |      1,740 |     25,487 |
++--------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

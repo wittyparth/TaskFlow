@@ -27,9 +27,9 @@ import {
 } from 'lucide-react'
 
 // Import our dashboard components
-import { KillSwitchDashboard } from './feature-flags/kill-switch'
-import { GradualRolloutDashboard } from './feature-flags/gradual-rollout'
-import { ABTestingDashboard } from './feature-flags/ab-testing'
+import { KillSwitchDemo } from './feature-flags/kill-switch-demo'
+import { GradualRolloutDemo } from './feature-flags/gradual-rollout-demo'
+import { ABTestingDemo } from './feature-flags/ab-testing-demo'
 import { PersonalizationDashboard } from './feature-flags/personalization'
 import { SessionRecordingDashboard } from './feature-flags/session-recording'
 import { SurveysDashboard } from './feature-flags/surveys'
@@ -256,7 +256,7 @@ export default function ProductManagerDashboard() {
               Critical Safety Feature
             </Badge>
           </div>
-          <KillSwitchDashboard />
+          <KillSwitchDemo />
         </TabsContent>
 
         <TabsContent value="rollout" className="space-y-6">
@@ -267,7 +267,7 @@ export default function ProductManagerDashboard() {
               Safe Deployment
             </Badge>
           </div>
-          <GradualRolloutDashboard />
+          <GradualRolloutDemo />
         </TabsContent>
 
         <TabsContent value="experiments" className="space-y-6">
@@ -278,7 +278,7 @@ export default function ProductManagerDashboard() {
               Data-Driven Decisions
             </Badge>
           </div>
-          <ABTestingDashboard />
+          <ABTestingDemo />
         </TabsContent>
 
         <TabsContent value="targeting" className="space-y-6">

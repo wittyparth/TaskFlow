@@ -1,8 +1,9 @@
 'use client'
 
-import { useFeatureFlags } from '@/hooks/use-feature-flags'
-import { useAnalytics } from '@/hooks/use-analytics'
+import { useFeatureFlag } from '@/hooks/use-feature-flags'
+import { usePostHog } from '@/components/providers/posthog-provider'
 import { useUser } from '@/hooks/use-auth'
+import { useAnalytics } from '@/hooks/use-analytics'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,55 +23,61 @@ interface KillSwitchConfig {
 }
 
 export function KillSwitchDashboard() {
-  const { isFeatureEnabled, getFeatureFlag } = useFeatureFlags()
+  const { user } = useUser()
+  const posthog = usePostHog()
   const { track } = useAnalytics()
-  const { user, profile } = useUser()
+  
+  // Real PostHog kill switch feature flags
+  const paymentSystemEnabled = useFeatureFlag('payment_system_kill_switch')
+  const aiFeaturesEnabled = useFeatureFlag('ai_features_kill_switch')
+  const socialFeaturesEnabled = useFeatureFlag('social_features_kill_switch')
+  const dataExportEnabled = useFeatureFlag('data_export_kill_switch')
 
-  // Only show to admins/owners
-  if (!profile || (profile.role !== 'admin' && profile.role !== 'owner')) {
+  // Only show to authenticated users
+  if (!user) {
     return null
   }
 
   const killSwitches: KillSwitchConfig[] = [
     {
       name: 'Payment System',
-      flagKey: 'kill_switch_payments',
-      description: 'Disable all payment processing and redirect to maintenance page',
+      flagKey: 'payment_system_kill_switch',
+      description: 'Emergency disable payment processing and redirect to maintenance page',
       riskLevel: 'critical',
-      affectedUsers: 12453,
+      affectedUsers: paymentSystemEnabled ? 0 : 12453,
       category: 'payment',
+      lastToggled: paymentSystemEnabled ? undefined : '2025-09-11 14:30:00',
+      toggledBy: paymentSystemEnabled ? undefined : user?.email,
     },
     {
-      name: 'AI Assistant',
-      flagKey: 'kill_switch_ai_assistant', 
-      description: 'Disable AI features if generating inappropriate responses',
+      name: 'AI Features',
+      flagKey: 'ai_features_kill_switch', 
+      description: 'Disable all AI-powered features including recommendations and assistance',
       riskLevel: 'high',
-      affectedUsers: 8932,
+      affectedUsers: aiFeaturesEnabled ? 0 : 8932,
       category: 'ai',
+      lastToggled: aiFeaturesEnabled ? undefined : '2025-09-11 12:15:00',
+      toggledBy: aiFeaturesEnabled ? undefined : user?.email,
     },
     {
-      name: 'New Dashboard',
-      flagKey: 'kill_switch_new_dashboard',
-      description: 'Revert all users to legacy dashboard interface',
+      name: 'Social Features',
+      flagKey: 'social_features_kill_switch',
+      description: 'Disable social sharing, comments, and collaborative features',
       riskLevel: 'medium',
-      affectedUsers: 15678,
+      affectedUsers: socialFeaturesEnabled ? 0 : 6745,
       category: 'ui',
+      lastToggled: socialFeaturesEnabled ? undefined : '2025-09-11 10:45:00',
+      toggledBy: socialFeaturesEnabled ? undefined : user?.email,
     },
     {
-      name: 'Real-time Sync',
-      flagKey: 'kill_switch_realtime_sync',
-      description: 'Disable real-time collaboration features',
-      riskLevel: 'medium',
-      affectedUsers: 5432,
-      category: 'performance',
-    },
-    {
-      name: 'Email Notifications',
-      flagKey: 'kill_switch_email_notifications',
-      description: 'Stop all outbound email notifications',
-      riskLevel: 'low',
-      affectedUsers: 18765,
+      name: 'Data Export',
+      flagKey: 'data_export_kill_switch',
+      description: 'Emergency disable data export functionality to prevent data breaches',
+      riskLevel: 'high',
+      affectedUsers: dataExportEnabled ? 0 : 3421,
       category: 'security',
+      lastToggled: dataExportEnabled ? undefined : '2025-09-11 09:20:00',
+      toggledBy: dataExportEnabled ? undefined : user?.email,
     },
   ]
 
@@ -135,7 +142,15 @@ export function KillSwitchDashboard() {
       </CardHeader>
       <CardContent className="space-y-4">
         {killSwitches.map((killSwitch) => {
-          const isEnabled = isFeatureEnabled(killSwitch.flagKey)
+          const isEnabled = (() => {
+            switch (killSwitch.flagKey) {
+              case 'payment_system_kill_switch': return paymentSystemEnabled
+              case 'ai_features_kill_switch': return aiFeaturesEnabled
+              case 'social_features_kill_switch': return socialFeaturesEnabled
+              case 'data_export_kill_switch': return dataExportEnabled
+              default: return true
+            }
+          })()
           
           return (
             <div
@@ -208,10 +223,8 @@ interface KillSwitchProps {
 }
 
 export function KillSwitch({ flagKey, children, fallback = null, gracefulDegradation }: KillSwitchProps) {
-  const { isFeatureEnabled } = useFeatureFlags()
+  const isKilled = useFeatureFlag(flagKey)
   const { track } = useAnalytics()
-
-  const isKilled = isFeatureEnabled(flagKey)
 
   useEffect(() => {
     if (isKilled) {

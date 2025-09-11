@@ -24,6 +24,7 @@ import {
 import { AdvancedFeatureGate } from '@/components/feature-flags/advanced-feature-gate'
 import { PersonalizedContent } from '@/components/feature-flags/personalization'
 import { BehaviorTracker } from '@/components/feature-flags/session-recording'
+import { RealFeatureFlagsDemo } from '@/components/feature-flags/real-feature-flags-demo'
 
 export default function Dashboard() {
   const { user, profile } = useUser()
@@ -231,6 +232,9 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Real PostHog Feature Flags Demo */}
+        <RealFeatureFlagsDemo />
 
         {/* Personalized Features Demo */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

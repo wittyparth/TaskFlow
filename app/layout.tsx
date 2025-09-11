@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { PostHogProvider } from "@/components/providers/posthog-provider"
+import { AuthProvider } from "@/components/providers/auth-provider"
 import { PageViewTracker } from "@/components/analytics/page-view-tracker"
 import { Suspense } from "react"
 import "./globals.css"
@@ -25,10 +26,12 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Suspense fallback={null}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <PostHogProvider>
-              <PageViewTracker />
-              {children}
-            </PostHogProvider>
+            <AuthProvider>
+              <PostHogProvider>
+                <PageViewTracker />
+                {children}
+              </PostHogProvider>
+            </AuthProvider>
           </ThemeProvider>
         </Suspense>
         <Analytics />

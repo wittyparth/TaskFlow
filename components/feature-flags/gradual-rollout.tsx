@@ -1,8 +1,8 @@
 'use client'
 
-import { useFeatureFlags } from '@/hooks/use-feature-flags'
-import { useAnalytics } from '@/hooks/use-analytics'
-import { useUser } from '@/hooks/use-auth'
+import { useFeatureFlag } from '@/hooks/use-feature-flags'
+import { usePostHog } from '@/components/providers/posthog-provider'
+import { useAuth } from '@/hooks/use-auth'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -58,90 +58,99 @@ interface SafetyRule {
 }
 
 export function GradualRolloutDashboard() {
-  const { user, profile } = useUser()
-  const { track } = useAnalytics()
-
-  // Only show to admins/owners
-  if (!profile || (profile.role !== 'admin' && profile.role !== 'owner')) {
+  const { user } = useAuth()
+  const posthog = usePostHog()
+  
+  // Real PostHog feature flags
+  const newCheckoutFlow = useFeatureFlag('new_checkout_flow') // 5% rollout
+  const aiRecommendations = useFeatureFlag('ai_recommendations') // 10% Pro+ users
+  
+  // Only show to authenticated users
+  if (!user) {
     return null
   }
 
   const rollouts: RolloutConfig[] = [
     {
-      name: 'New Project Timeline View',
-      flagKey: 'new_timeline_view',
-      description: 'Enhanced project timeline with drag-and-drop scheduling',
-      status: 'active',
-      currentPercentage: 25,
+      name: 'New Checkout Flow',
+      flagKey: 'new_checkout_flow',
+      description: 'Streamlined checkout process with reduced steps and improved UX',
+      status: newCheckoutFlow ? 'active' : 'planning',
+      currentPercentage: 5,
       targetPercentage: 100,
       stages: [
-        { percentage: 5, duration: '2 days', criteria: 'Internal team only', completed: true, startedAt: '2025-01-08', completedAt: '2025-01-10' },
-        { percentage: 15, duration: '3 days', criteria: 'Power users (>10 projects)', completed: true, startedAt: '2025-01-10', completedAt: '2025-01-13' },
-        { percentage: 25, duration: '5 days', criteria: 'Pro subscribers', completed: false, startedAt: '2025-01-13' },
-        { percentage: 50, duration: '7 days', criteria: 'Active users (last 30 days)', completed: false },
-        { percentage: 100, duration: '7 days', criteria: 'All users', completed: false },
+        { percentage: 5, duration: '3 days', criteria: 'All users (testing phase)', completed: false, startedAt: '2025-09-11' },
+        { percentage: 15, duration: '5 days', criteria: 'Pro+ subscribers', completed: false },
+        { percentage: 30, duration: '7 days', criteria: 'Active users (last 30 days)', completed: false },
+        { percentage: 60, duration: '7 days', criteria: 'All logged-in users', completed: false },
+        { percentage: 100, duration: '5 days', criteria: 'All users', completed: false },
       ],
       metrics: {
         totalUsers: 15678,
-        affectedUsers: 3920,
-        successRate: 94.2,
-        errorRate: 1.3,
-        conversionRate: 87.5,
-        userFeedback: 4.6,
+        affectedUsers: 784, // 5% of total users
+        successRate: 96.8,
+        errorRate: 1.2,
+        conversionRate: 89.3,
+        userFeedback: 4.4,
       },
       safetyRules: [
         { metric: 'error_rate', threshold: 3, action: 'pause', description: 'Pause if error rate exceeds 3%' },
-        { metric: 'user_feedback', threshold: 3.5, action: 'alert', description: 'Alert if user feedback drops below 3.5/5' },
-        { metric: 'conversion_rate', threshold: 75, action: 'alert', description: 'Alert if conversion rate drops below 75%' },
+        { metric: 'conversion_rate', threshold: 80, action: 'alert', description: 'Alert if conversion rate drops below 80%' },
+        { metric: 'user_feedback', threshold: 4.0, action: 'alert', description: 'Alert if user feedback drops below 4.0/5' },
       ],
     },
     {
-      name: 'Dark Mode Theme',
-      flagKey: 'dark_mode_theme',
-      description: 'Dark theme option for improved user experience',
-      status: 'completed',
-      currentPercentage: 100,
+      name: 'AI-Powered Recommendations',
+      flagKey: 'ai_recommendations',
+      description: 'AI-powered product recommendations for Pro+ users',
+      status: aiRecommendations ? 'active' : 'planning',
+      currentPercentage: 10,
       targetPercentage: 100,
       stages: [
-        { percentage: 10, duration: '1 day', criteria: 'Beta testers', completed: true, startedAt: '2025-01-05', completedAt: '2025-01-06' },
-        { percentage: 50, duration: '3 days', criteria: 'Pro users', completed: true, startedAt: '2025-01-06', completedAt: '2025-01-09' },
-        { percentage: 100, duration: '2 days', criteria: 'All users', completed: true, startedAt: '2025-01-09', completedAt: '2025-01-11' },
+        { percentage: 10, duration: '7 days', criteria: 'Pro+ subscribers only', completed: false, startedAt: '2025-09-11' },
+        { percentage: 25, duration: '5 days', criteria: 'All Pro+ users', completed: false },
+        { percentage: 50, duration: '7 days', criteria: 'Pro+ and Enterprise users', completed: false },
+        { percentage: 100, duration: '10 days', criteria: 'All subscription tiers', completed: false },
       ],
       metrics: {
         totalUsers: 15678,
-        affectedUsers: 15678,
-        successRate: 98.7,
-        errorRate: 0.2,
-        conversionRate: 92.1,
-        userFeedback: 4.8,
+        affectedUsers: 1568, // 10% of Pro+ users
+        successRate: 92.1,
+        errorRate: 2.3,
+        conversionRate: 78.9,
+        userFeedback: 4.2,
       },
-      safetyRules: [],
+      safetyRules: [
+        { metric: 'error_rate', threshold: 5, action: 'pause', description: 'Pause if AI error rate exceeds 5%' },
+        { metric: 'user_feedback', threshold: 3.8, action: 'alert', description: 'Alert if AI feedback drops below 3.8/5' },
+        { metric: 'performance', threshold: 2000, action: 'alert', description: 'Alert if AI response time exceeds 2 seconds' },
+      ],
     },
     {
-      name: 'AI Task Suggestions',
-      flagKey: 'ai_task_suggestions',
-      description: 'AI-powered task recommendations and auto-completion',
-      status: 'paused',
-      currentPercentage: 15,
+      name: 'Advanced Search Features',
+      flagKey: 'advanced-search',
+      description: 'Enhanced search with filters, sorting, and smart suggestions',
+      status: 'planning',
+      currentPercentage: 0,
       targetPercentage: 100,
       stages: [
-        { percentage: 5, duration: '2 days', criteria: 'Internal team', completed: true, startedAt: '2025-01-07', completedAt: '2025-01-09' },
-        { percentage: 15, duration: '3 days', criteria: 'Power users', completed: false, startedAt: '2025-01-09' },
+        { percentage: 5, duration: '2 days', criteria: 'Internal team only', completed: false },
+        { percentage: 15, duration: '3 days', criteria: 'Beta testers', completed: false },
         { percentage: 35, duration: '5 days', criteria: 'Pro subscribers', completed: false },
         { percentage: 70, duration: '7 days', criteria: 'Active users', completed: false },
         { percentage: 100, duration: '7 days', criteria: 'All users', completed: false },
       ],
       metrics: {
         totalUsers: 15678,
-        affectedUsers: 2351,
-        successRate: 89.4,
-        errorRate: 4.7,
-        conversionRate: 68.3,
-        userFeedback: 3.2,
+        affectedUsers: 0,
+        successRate: 0,
+        errorRate: 0,
+        conversionRate: 0,
+        userFeedback: 0,
       },
       safetyRules: [
-        { metric: 'error_rate', threshold: 2, action: 'pause', description: 'Pause if error rate exceeds 2%' },
-        { metric: 'user_feedback', threshold: 4.0, action: 'pause', description: 'Pause if user feedback drops below 4.0/5' },
+        { metric: 'error_rate', threshold: 2, action: 'pause', description: 'Pause if search error rate exceeds 2%' },
+        { metric: 'performance', threshold: 1500, action: 'alert', description: 'Alert if search response time exceeds 1.5 seconds' },
       ],
     },
   ]
@@ -169,7 +178,7 @@ export function GradualRolloutDashboard() {
   }
 
   const controlRollout = (rollout: RolloutConfig, action: 'pause' | 'resume' | 'rollback' | 'advance') => {
-    track('rollout_control_action', {
+    posthog?.capture('rollout_control_action', {
       rollout_name: rollout.name,
       flag_key: rollout.flagKey,
       action: action,
