@@ -1,18 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { SubscriptionGate } from "@/components/feature-gates/subscription-gate"
+import { KillSwitch } from "@/components/feature-gates/kill-switch"
+import { useAuth } from "@/hooks/use-auth"
 
 import {
   Bell,
@@ -30,6 +20,41 @@ import {
   Crown,
   Edit,
   Trash2,
+  Lock,
+} from "lucide-react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { SubscriptionGate } from "@/components/feature-gates/subscription-gate"
+import { KillSwitch } from "@/components/feature-gates/kill-switch"
+
+import {
+  Bell,
+  MoreHorizontal,
+  Users,
+  CheckCircle2,
+  TrendingUp,
+  Activity,
+  Settings,
+  User,
+  Mail,
+  Shield,
+  Clock,
+  MessageSquare,
+  Crown,
+  Edit,
+  Trash2,
+  Lock,
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -199,6 +224,87 @@ export default function TeamPage() {
       member.role.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
+  
+  return (
+    <SubscriptionGate 
+      requiredTier="pro"
+      fallback={
+        <div className="container mx-auto py-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Team Management</h1>
+              <p className="text-muted-foreground">
+                Collaborate with your team and manage permissions
+              </p>
+            </div>
+          </div>
+          
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <Lock className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Team Features Unavailable</h3>
+              <p className="text-muted-foreground text-center mb-4 max-w-md">
+                Team management features are available for Pro and Enterprise users. 
+                Upgrade your plan to invite team members and manage permissions.
+              </p>
+              <Button>
+                Upgrade to Pro
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <KillSwitch featureFlag="team-management" fallback={
+        <div className="container mx-auto py-6">
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <h3 className="text-lg font-semibold mb-2">Team Features Temporarily Unavailable</h3>
+              <p className="text-muted-foreground text-center">
+                Team management is currently disabled. Please check back later.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      }>
+        <TeamContent 
+          teamMembers={teamMembers}
+          filteredMembers={filteredMembers}
+          pendingInvitations={pendingInvitations}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isInviteDialogOpen={isInviteDialogOpen}
+          setIsInviteDialogOpen={setIsInviteDialogOpen}
+        />
+      </KillSwitch>
+    </SubscriptionGate>
+  )
+}
+
+function TeamContent({
+  teamMembers,
+  filteredMembers,
+  pendingInvitations,
+  searchQuery,
+  setSearchQuery,
+  activeTab,
+  setActiveTab,
+  isInviteDialogOpen,
+  setIsInviteDialogOpen
+}: {
+  teamMembers: any[];
+  filteredMembers: any[];
+  pendingInvitations: any[];
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  isInviteDialogOpen: boolean;
+  setIsInviteDialogOpen: (open: boolean) => void;
+}) {
+  const router = useRouter();
   
   return (
     <div className="min-h-screen bg-background">

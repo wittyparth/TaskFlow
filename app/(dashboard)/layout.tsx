@@ -19,6 +19,7 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
+import { DebugPanel } from "@/components/debug-panel"
 
 export default function DashboardLayout({
   children,
@@ -179,6 +180,9 @@ export default function DashboardLayout({
 
         <main className="flex-1">{children}</main>
       </div>
+      
+      {/* Debug Panel - only in development */}
+      <DebugPanel />
     </div>
   )
 }

@@ -13,6 +13,9 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SubscriptionGate } from "@/components/feature-gates/subscription-gate";
+import { KillSwitch } from "@/components/feature-gates/kill-switch";
+import { useAuth } from "@/hooks/use-auth";
 
 import {
   BarChart3,
@@ -21,6 +24,7 @@ import {
   Target,
   Zap,
   Filter,
+  Lock,
 } from "lucide-react";
 import {
   AreaChart,
@@ -39,6 +43,64 @@ import {
 
 export default function AnalyticsPage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const { profile } = useAuth();
+
+  // Check if user has access to analytics
+  return (
+    <SubscriptionGate 
+      requiredTier="pro"
+      fallback={
+        <div className="container mx-auto py-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
+              <p className="text-muted-foreground">
+                Get insights into your project performance and team productivity
+              </p>
+            </div>
+          </div>
+          
+          <Card className="border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <Lock className="h-12 w-12 text-muted-foreground mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Analytics Unavailable</h3>
+              <p className="text-muted-foreground text-center mb-4 max-w-md">
+                Advanced analytics are available for Pro and Enterprise users. 
+                Upgrade your plan to unlock detailed insights and reporting.
+              </p>
+              <Button>
+                Upgrade to Pro
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <KillSwitch featureFlag="advanced-analytics" fallback={
+        <div className="container mx-auto py-6">
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <h3 className="text-lg font-semibold mb-2">Analytics Temporarily Unavailable</h3>
+              <p className="text-muted-foreground text-center">
+                This feature is currently disabled. Please check back later.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      }>
+        <AnalyticsContent activeTab={activeTab} setActiveTab={setActiveTab} />
+      </KillSwitch>
+    </SubscriptionGate>
+  );
+}
+
+function AnalyticsContent({ 
+  activeTab, 
+  setActiveTab 
+}: { 
+  activeTab: string; 
+  setActiveTab: (tab: string) => void;
+}) {
 
   // Mock data for charts
   const projectCompletionData = [

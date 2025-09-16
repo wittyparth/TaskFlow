@@ -5,9 +5,21 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Activity, CheckCircle2, Users, TrendingUp, Settings, CreditCard, FolderOpen, List } from "lucide-react"
+import { Activity, CheckCircle2, Users, TrendingUp, Settings, CreditCard, FolderOpen, List, Bell, Search } from "lucide-react"
+import { useFeatureFlags } from "@/hooks/use-feature-flags"
+import { useAuth } from "@/hooks/use-auth"
 
-const navigationItems = [
+interface NavigationItem {
+  title: string
+  href: string
+  icon: any
+  badge?: string
+  requiredTier?: 'free' | 'pro' | 'enterprise'
+  requiredFeatureFlag?: string
+  requiredRole?: 'member' | 'admin' | 'owner'
+}
+
+const navigationItems: NavigationItem[] = [
   {
     title: "Dashboard",
     href: "/dashboard",
@@ -15,7 +27,7 @@ const navigationItems = [
   },
   {
     title: "Projects",
-    href: "/projects",
+    href: "/projects", 
     icon: CheckCircle2,
     badge: "12",
   },
@@ -29,11 +41,37 @@ const navigationItems = [
     title: "Team",
     href: "/team",
     icon: Users,
+    requiredTier: 'pro', // Team features require pro or enterprise
+    requiredFeatureFlag: 'team-management',
   },
   {
-    title: "Analytics",
+    title: "Analytics", 
     href: "/analytics",
     icon: TrendingUp,
+    requiredTier: 'pro', // Analytics require pro or enterprise
+    requiredFeatureFlag: 'advanced-analytics',
+  },
+  {
+    title: "Notifications",
+    href: "/notifications",
+    icon: Bell,
+    requiredFeatureFlag: 'notifications', // Can be killed via feature flag
+  },
+  {
+    title: "Search",
+    href: "/search", 
+    icon: Search,
+    requiredTier: 'pro',
+    requiredFeatureFlag: 'advanced-search',
+  },
+]
+
+// Development/Testing navigation items (only shown in development)
+const devNavigationItems: NavigationItem[] = [
+  {
+    title: "Feature Status",
+    href: "/feature-status",
+    icon: Activity,
   },
 ]
 
@@ -48,7 +86,7 @@ const workspaceItems = [
   },
 ]
 
-const settingsItems = [
+const settingsItems: NavigationItem[] = [
   {
     title: "Subscription",
     href: "/subscription",
@@ -61,15 +99,70 @@ const settingsItems = [
   },
 ]
 
+// Helper function to check if user has access to a navigation item
+function hasAccessToItem(
+  item: NavigationItem, 
+  profile: any, 
+  isFeatureEnabled: (flag: string) => boolean
+): boolean {
+  // Check subscription tier requirement
+  if (item.requiredTier) {
+    const tierHierarchy = { free: 0, pro: 1, enterprise: 2 }
+    const userTier = tierHierarchy[profile?.subscription_tier as keyof typeof tierHierarchy] ?? 0
+    const requiredTier = tierHierarchy[item.requiredTier]
+    
+    if (userTier < requiredTier) {
+      return false
+    }
+  }
+
+  // Check role requirement
+  if (item.requiredRole) {
+    const userRole = profile?.role || 'member'
+    const roleHierarchy = { member: 0, admin: 1, owner: 2 }
+    const userRoleLevel = roleHierarchy[userRole as keyof typeof roleHierarchy] ?? 0
+    const requiredRoleLevel = roleHierarchy[item.requiredRole as keyof typeof roleHierarchy] ?? 0
+    
+    if (userRoleLevel < requiredRoleLevel) {
+      return false
+    }
+  }
+
+  // Check feature flag requirement (kill switch)
+  if (item.requiredFeatureFlag) {
+    if (!isFeatureEnabled(item.requiredFeatureFlag)) {
+      return false
+    }
+  }
+
+  return true
+}
+
 export function Navigation({ collapsed = false }: { collapsed?: boolean }) {
   const pathname = usePathname()
+  const { profile } = useAuth()
+  const { isFeatureEnabled } = useFeatureFlags()
+
+  // Filter navigation items based on access control
+  const filteredNavigationItems = navigationItems.filter(item => 
+    hasAccessToItem(item, profile, isFeatureEnabled)
+  )
+  
+  // Add dev items in development
+  const allNavigationItems = process.env.NODE_ENV === 'development' 
+    ? [...filteredNavigationItems, ...devNavigationItems]
+    : filteredNavigationItems
+  
+  const filteredSettingsItems = settingsItems.filter(item => 
+    hasAccessToItem(item, profile, isFeatureEnabled)
+  )
 
   return (
     <nav className="space-y-6">
       <div className="space-y-2">
-        {navigationItems.map((item) => {
+        {allNavigationItems.map((item) => {
           const Icon = item.icon
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+          const isActive = pathname ? (pathname === item.href || pathname.startsWith(item.href + "/")) : false
 
           return (
             <Button 
@@ -104,7 +197,7 @@ export function Navigation({ collapsed = false }: { collapsed?: boolean }) {
             <h4 className="text-sm font-medium text-muted-foreground px-2">Recent Projects</h4>
             {workspaceItems[0].items.map((item) => {
               const Icon = item.icon
-              const isActive = pathname === item.href
+              const isActive = pathname ? pathname === item.href : false
 
               return (
                 <Button
@@ -128,9 +221,9 @@ export function Navigation({ collapsed = false }: { collapsed?: boolean }) {
       <Separator />
 
       <div className="space-y-2">
-        {settingsItems.map((item) => {
+        {filteredSettingsItems.map((item) => {
           const Icon = item.icon
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
+          const isActive = pathname ? (pathname === item.href || pathname.startsWith(item.href + "/")) : false
 
           return (
             <Button 
