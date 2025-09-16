@@ -167,6 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           if (session?.user) {
+            console.log('User signed in, updating auth state...', session.user.email)
             setUser(session.user)
             
             try {
@@ -177,12 +178,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 if (profileData) {
                   updatePostHogUser(session.user, profileData)
                 }
+                console.log('Profile loaded successfully for user:', session.user.email)
               }
             } catch (error) {
               console.error('Error fetching profile after auth change:', error)
+              // Don't block authentication if profile fetch fails
             }
           }
         } else if (event === 'SIGNED_OUT') {
+          console.log('User signed out, clearing auth state...')
           setUser(null)
           setProfile(null)
           if (typeof window !== 'undefined' && posthog) {
@@ -208,7 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: loading || !initialized,
     signOut,
     refreshProfile,
-    isAuthenticated: !!user && !!profile && !loading && initialized
+    isAuthenticated: !!user && !loading && initialized
   }
 
   return (

@@ -32,10 +32,12 @@ export default function DashboardLayout({
 
   // Redirect to signin if not authenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    console.log('Dashboard auth check:', { loading, user: !!user, profile: !!profile, isAuthenticated })
+    if (!loading && !user) {
+      console.log('No user found, redirecting to signin...')
       router.push('/signin')
     }
-  }, [loading, isAuthenticated, router])
+  }, [loading, user, router])
 
   // Show loading while checking auth
   if (loading) {
@@ -50,7 +52,7 @@ export default function DashboardLayout({
   }
 
   // Show login prompt if not authenticated
-  if (!isAuthenticated || !user || !profile) {
+  if (!user && !loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -138,6 +140,11 @@ export default function DashboardLayout({
                       {profile?.subscription_tier && (
                         <p className="text-xs leading-none text-primary font-medium capitalize">
                           {profile.subscription_tier} Plan
+                        </p>
+                      )}
+                      {!profile && (
+                        <p className="text-xs leading-none text-muted-foreground">
+                          Loading profile...
                         </p>
                       )}
                     </div>

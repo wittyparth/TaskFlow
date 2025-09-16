@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator"
 import { CheckCircle, ArrowRight, Github, Mail, Eye, EyeOff } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { useAnalytics } from "@/hooks/use-analytics"
+import { useUser } from "@/hooks/use-auth"
 
 export default function SignInPage() {
   const [formData, setFormData] = useState({ email: "", password: "" })
@@ -19,6 +20,18 @@ export default function SignInPage() {
   const [error, setError] = useState("")
   const router = useRouter()
   const { track } = useAnalytics()
+  const { user, loading } = useUser()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user && !loading) {
+      console.log('User authenticated, redirecting to dashboard...')
+      // Use setTimeout to ensure state has settled
+      setTimeout(() => {
+        router.push("/dashboard")
+      }, 100)
+    }
+  }, [user, loading, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,6 +39,8 @@ export default function SignInPage() {
     setError("")
     
     try {
+      console.log('Attempting signin with:', formData.email)
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
         password: formData.password,
@@ -34,6 +49,11 @@ export default function SignInPage() {
       if (error) {
         console.error('Supabase signin error:', error)
         setError(error.message)
+        track('user_signin_failed', {
+          method: 'email',
+          error: error.message,
+          user_email: formData.email,
+        })
         return
       }
 
@@ -45,8 +65,21 @@ export default function SignInPage() {
         user_email: formData.email,
       })
       
-      // Redirect to dashboard
-      router.push("/dashboard")
+      // Add a small delay to allow auth state to update
+      setTimeout(() => {
+        console.log('Redirecting to dashboard after signin...')
+        router.refresh() // Refresh to ensure auth state is updated
+        router.push('/dashboard')
+      }, 500)
+      
+      // Fallback redirect after longer delay if router.push doesn't work
+      setTimeout(() => {
+        if (window.location.pathname === '/signin') {
+          console.log('Fallback redirect triggered')
+          window.location.href = '/dashboard'
+        }
+      }, 2000)
+      
     } catch (err) {
       console.error('Signin catch error:', err)
       setError("An unexpected error occurred")
@@ -137,6 +170,15 @@ export default function SignInPage() {
             {error && (
               <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
                 {error}
+              </div>
+            )}
+
+            {/* Debug info */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="p-3 bg-muted/50 rounded-lg text-xs space-y-1">
+                <div>Loading: {loading.toString()}</div>
+                <div>User: {user ? user.email : 'null'}</div>
+                <div>IsLoading: {isLoading.toString()}</div>
               </div>
             )}
 
