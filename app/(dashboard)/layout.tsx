@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +17,8 @@ import {
 import { Bell, Search, Plus, CheckCircle2, Settings, LogOut, User, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
+import { useAuth } from "@/hooks/use-auth"
+import { useRouter } from "next/navigation"
 
 export default function DashboardLayout({
   children,
@@ -24,6 +26,53 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const { user, profile, loading, signOut, isAuthenticated } = useAuth()
+  const router = useRouter()
+
+  // Redirect to signin if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push('/signin')
+    }
+  }, [loading, isAuthenticated, router])
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated || !user || !profile) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">Please Login</h1>
+          <p className="text-muted-foreground mb-6">You need to be logged in to access the dashboard.</p>
+          <Button asChild>
+            <Link href="/signin">Go to Sign In</Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+    } catch (error) {
+      console.error('Sign out error:', error)
+      // Fallback - redirect to signin
+      router.push('/signin')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,16 +115,30 @@ export default function DashboardLayout({
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" alt="User" />
-                      <AvatarFallback>JD</AvatarFallback>
+                      <AvatarImage src={profile?.avatar_url || "/placeholder.svg?height=32&width=32"} alt={profile?.full_name || "User"} />
+                      <AvatarFallback>
+                        {profile?.full_name 
+                          ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+                          : user?.email?.slice(0, 2).toUpperCase() || 'U'
+                        }
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">John Doe</p>
-                      <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
+                      <p className="text-sm font-medium leading-none">
+                        {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user?.email}
+                      </p>
+                      {profile?.subscription_tier && (
+                        <p className="text-xs leading-none text-primary font-medium capitalize">
+                          {profile.subscription_tier} Plan
+                        </p>
+                      )}
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
@@ -92,14 +155,7 @@ export default function DashboardLayout({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => {
-                      // Clear auth token
-                      document.cookie = 'authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-                      // Redirect to home
-                      window.location.href = '/'
-                    }}
-                  >
+                  <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>

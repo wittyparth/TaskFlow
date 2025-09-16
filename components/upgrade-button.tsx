@@ -16,7 +16,7 @@ interface UpgradeButtonProps {
 }
 
 export function UpgradeButton({ showAllOptions = true, compact = false, location = 'dashboard' }: UpgradeButtonProps) {
-  const { user, profile } = useUser()
+  const { user, profile, refreshProfile } = useUser()
   const [loading, setLoading] = useState(false)
   const [currentTier, setCurrentTier] = useState<string>('free')
 
@@ -37,18 +37,21 @@ export function UpgradeButton({ showAllOptions = true, compact = false, location
     if (!user) return
     
     setLoading(true)
-    const result = await upgradeUserSubscription(user.id, tier)
-    
-    if (result.success) {
-      setCurrentTier(tier)
-      // Show success message
-      alert(`🎉 Successfully upgraded to ${tier.toUpperCase()}! New features are now available.`)
+    try {
+      const result = await upgradeUserSubscription(user.id, tier)
       
-      // Refresh the page to show new features
-      setTimeout(() => {
-        window.location.reload()
-      }, 1500)
-    } else {
+      if (result.success) {
+        // Refresh the auth state to get updated profile
+        await refreshProfile()
+        setCurrentTier(tier)
+        
+        // Show success message
+        alert(`🎉 Successfully upgraded to ${tier.toUpperCase()}! New features are now available.`)
+      } else {
+        alert('❌ Upgrade failed. Please try again.')
+      }
+    } catch (error) {
+      console.error('Upgrade error:', error)
       alert('❌ Upgrade failed. Please try again.')
     }
     setLoading(false)
@@ -70,21 +73,26 @@ export function UpgradeButton({ showAllOptions = true, compact = false, location
     
     setLoading(true)
     
-    let result
-    if (targetTier === 'free') {
-      result = await downgradeUser(user.id)
-    } else {
-      // Downgrade to Pro from Enterprise
-      result = await upgradeUserSubscription(user.id, targetTier)
-    }
-    
-    if (result.success) {
-      setCurrentTier(targetTier)
-      alert(`✅ Successfully switched to ${tierNames[targetTier]} tier.`)
-      setTimeout(() => {
-        window.location.reload()
-      }, 1500)
-    } else {
+    try {
+      let result
+      if (targetTier === 'free') {
+        result = await downgradeUser(user.id)
+      } else {
+        // Downgrade to Pro from Enterprise
+        result = await upgradeUserSubscription(user.id, targetTier)
+      }
+      
+      if (result.success) {
+        // Refresh the auth state to get updated profile
+        await refreshProfile()
+        setCurrentTier(targetTier)
+        
+        alert(`✅ Successfully switched to ${tierNames[targetTier]} tier.`)
+      } else {
+        alert('❌ Subscription change failed. Please try again.')
+      }
+    } catch (error) {
+      console.error('Downgrade error:', error)
       alert('❌ Subscription change failed. Please try again.')
     }
     setLoading(false)

@@ -37,32 +37,36 @@ export async function upgradeUserSubscription(
     if (error) throw error
 
     // Update PostHog user properties immediately
-    posthog.identify(userId, {
-      subscription_tier: newTier,
-      upgrade_date: new Date().toISOString(),
-      previous_tier: previousTier
-    })
+    if (typeof window !== 'undefined' && posthog) {
+      posthog.identify(userId, {
+        subscription_tier: newTier,
+        upgrade_date: new Date().toISOString(),
+        previous_tier: previousTier
+      })
 
-    // Track upgrade event in PostHog
-    posthog.capture('subscription_upgraded', {
-      from_tier: previousTier,
-      to_tier: newTier,
-      upgrade_date: new Date().toISOString(),
-      user_id: userId,
-      upgrade_method: 'demo_button' // In real app, this would be 'stripe', 'paypal', etc.
-    })
+      // Track upgrade event in PostHog
+      posthog.capture('subscription_upgraded', {
+        from_tier: previousTier,
+        to_tier: newTier,
+        upgrade_date: new Date().toISOString(),
+        user_id: userId,
+        upgrade_method: 'demo_button' // In real app, this would be 'stripe', 'paypal', etc.
+      })
 
-    // Force PostHog to reload feature flags with new user properties
-    posthog.reloadFeatureFlags()
+      // Force PostHog to reload feature flags with new user properties
+      posthog.reloadFeatureFlags()
+    }
 
     return { success: true, data }
   } catch (error) {
     console.error('Upgrade failed:', error)
-    posthog.capture('upgrade_failed', {
-      user_id: userId,
-      target_tier: newTier,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    })
+    if (typeof window !== 'undefined' && posthog) {
+      posthog.capture('upgrade_failed', {
+        user_id: userId,
+        target_tier: newTier,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      })
+    }
     return { success: false, error }
   }
 }
@@ -94,31 +98,35 @@ export async function downgradeUser(userId: string): Promise<UpgradeResult> {
     if (error) throw error
 
     // Update PostHog user properties
-    posthog.identify(userId, {
-      subscription_tier: 'free',
-      downgrade_date: new Date().toISOString(),
-      previous_tier: previousTier
-    })
+    if (typeof window !== 'undefined' && posthog) {
+      posthog.identify(userId, {
+        subscription_tier: 'free',
+        downgrade_date: new Date().toISOString(),
+        previous_tier: previousTier
+      })
 
-    // Track downgrade event
-    posthog.capture('subscription_downgraded', {
-      from_tier: previousTier,
-      to_tier: 'free',
-      downgrade_date: new Date().toISOString(),
-      user_id: userId,
-      downgrade_reason: 'user_request' // Could be 'payment_failed', 'user_request', etc.
-    })
+      // Track downgrade event
+      posthog.capture('subscription_downgraded', {
+        from_tier: previousTier,
+        to_tier: 'free',
+        downgrade_date: new Date().toISOString(),
+        user_id: userId,
+        downgrade_reason: 'user_request' // Could be 'payment_failed', 'user_request', etc.
+      })
 
-    // Force PostHog to reload feature flags
-    posthog.reloadFeatureFlags()
+      // Force PostHog to reload feature flags
+      posthog.reloadFeatureFlags()
+    }
 
     return { success: true, data }
   } catch (error) {
     console.error('Downgrade failed:', error)
-    posthog.capture('downgrade_failed', {
-      user_id: userId,
-      error: error instanceof Error ? error.message : 'Unknown error'
-    })
+    if (typeof window !== 'undefined' && posthog) {
+      posthog.capture('downgrade_failed', {
+        user_id: userId,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      })
+    }
     return { success: false, error }
   }
 }

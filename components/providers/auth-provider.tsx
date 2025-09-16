@@ -88,10 +88,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshProfile = async () => {
     if (user) {
-      const profileData = await fetchProfile(user.id, user.email)
-      setProfile(profileData)
-      if (profileData) {
-        updatePostHogUser(user, profileData)
+      try {
+        const profileData = await fetchProfile(user.id, user.email)
+        setProfile(profileData)
+        if (profileData) {
+          updatePostHogUser(user, profileData)
+        }
+      } catch (error) {
+        console.error('Error refreshing profile:', error)
       }
     }
   }
@@ -204,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading: loading || !initialized,
     signOut,
     refreshProfile,
-    isAuthenticated: !!user && !!profile
+    isAuthenticated: !!user && !!profile && !loading && initialized
   }
 
   return (
