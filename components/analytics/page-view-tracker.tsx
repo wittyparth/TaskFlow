@@ -11,7 +11,7 @@ export function PageViewTracker() {
 
   useEffect(() => {
     // Track page view when pathname or search params change
-    const url = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '')
+    const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '')
     
     // Map pathnames to readable page names
     const getPageName = (path: string) => {
@@ -51,11 +51,11 @@ export function PageViewTracker() {
       return routes[path] || path
     }
 
-    const pageName = getPageName(pathname)
+    const pageName = getPageName(pathname || '')
     
     trackPageView(pageName, {
-      path: pathname,
-      search: searchParams.toString(),
+      path: pathname || '',
+      search: searchParams?.toString() || '',
       full_url: url,
     })
   }, [pathname, searchParams, trackPageView])

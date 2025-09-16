@@ -1,5 +1,18 @@
 "use client"
 
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { SubscriptionGate } from "@/components/feature-gates/subscription-gate"
 import { KillSwitch } from "@/components/feature-gates/kill-switch"
 import { useAuth } from "@/hooks/use-auth"
@@ -22,42 +35,35 @@ import {
   Trash2,
   Lock,
 } from "lucide-react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { SubscriptionGate } from "@/components/feature-gates/subscription-gate"
-import { KillSwitch } from "@/components/feature-gates/kill-switch"
-
-import {
-  Bell,
-  MoreHorizontal,
-  Users,
-  CheckCircle2,
-  TrendingUp,
-  Activity,
-  Settings,
-  User,
-  Mail,
-  Shield,
-  Clock,
-  MessageSquare,
-  Crown,
-  Edit,
-  Trash2,
-  Lock,
-} from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+
+// Helper functions
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "online":
+      return "bg-green-500"
+    case "away":
+      return "bg-yellow-500"
+    case "offline":
+      return "bg-gray-400"
+    default:
+      return "bg-gray-400"
+  }
+}
+
+const getRoleIcon = (role: string) => {
+  switch (role) {
+    case "Owner":
+      return <Crown className="w-4 h-4 text-yellow-500" />
+    case "Admin":
+      return <Shield className="w-4 h-4 text-blue-500" />
+    case "Member":
+      return <User className="w-4 h-4 text-gray-500" />
+    default:
+      return <User className="w-4 h-4 text-gray-500" />
+  }
+}
 
 export default function TeamPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -191,32 +197,6 @@ export default function TeamPage() {
     },
   ]
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "online":
-        return "bg-green-500"
-      case "away":
-        return "bg-yellow-500"
-      case "offline":
-        return "bg-gray-400"
-      default:
-        return "bg-gray-400"
-    }
-  }
-
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case "Owner":
-        return <Crown className="w-4 h-4 text-yellow-500" />
-      case "Admin":
-        return <Shield className="w-4 h-4 text-blue-500" />
-      case "Member":
-        return <User className="w-4 h-4 text-gray-500" />
-      default:
-        return <User className="w-4 h-4 text-gray-500" />
-    }
-  }
-
   const filteredMembers = teamMembers.filter(
     (member) =>
       member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -271,6 +251,7 @@ export default function TeamPage() {
           teamMembers={teamMembers}
           filteredMembers={filteredMembers}
           pendingInvitations={pendingInvitations}
+          recentActivity={recentActivity}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           activeTab={activeTab}
@@ -287,6 +268,7 @@ function TeamContent({
   teamMembers,
   filteredMembers,
   pendingInvitations,
+  recentActivity,
   searchQuery,
   setSearchQuery,
   activeTab,
@@ -297,6 +279,7 @@ function TeamContent({
   teamMembers: any[];
   filteredMembers: any[];
   pendingInvitations: any[];
+  recentActivity: any[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   activeTab: string;
@@ -305,7 +288,7 @@ function TeamContent({
   setIsInviteDialogOpen: (open: boolean) => void;
 }) {
   const router = useRouter();
-  
+
   return (
     <div className="min-h-screen bg-background">
 
@@ -567,7 +550,7 @@ function TeamContent({
                           <AvatarFallback>
                             {activity.user
                               .split(" ")
-                              .map((n) => n[0])
+                              .map((n: string) => n[0])
                               .join("")}
                           </AvatarFallback>
                         </Avatar>

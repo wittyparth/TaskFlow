@@ -11,7 +11,7 @@ import { CheckCircle, ArrowRight, Eye, EyeOff, Check, X, AlertCircle } from "luc
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams()
-  const token = searchParams.get("token")
+  const token = searchParams?.get("token")
   
   const [formData, setFormData] = useState({
     password: "",
