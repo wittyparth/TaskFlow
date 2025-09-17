@@ -18,20 +18,31 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [redirecting, setRedirecting] = useState(false)
   const router = useRouter()
   const { track } = useAnalytics()
   const { user, loading } = useUser()
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated - prevent loops
   useEffect(() => {
-    if (user && !loading) {
+    if (user && !loading && !redirecting) {
       console.log('User authenticated, redirecting to dashboard...')
-      // Use setTimeout to ensure state has settled
-      setTimeout(() => {
-        router.push("/dashboard")
-      }, 100)
+      setRedirecting(true)
+      router.replace("/dashboard")
     }
-  }, [user, loading, router])
+  }, [user, loading, router, redirecting])
+
+  // Don't render form if user is authenticated or redirecting
+  if (user && !loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-sm text-gray-600">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,20 +76,9 @@ export default function SignInPage() {
         user_email: formData.email,
       })
       
-      // Add a small delay to allow auth state to update
-      setTimeout(() => {
-        console.log('Redirecting to dashboard after signin...')
-        router.refresh() // Refresh to ensure auth state is updated
-        router.push('/dashboard')
-      }, 500)
-      
-      // Fallback redirect after longer delay if router.push doesn't work
-      setTimeout(() => {
-        if (window.location.pathname === '/signin') {
-          console.log('Fallback redirect triggered')
-          window.location.href = '/dashboard'
-        }
-      }, 2000)
+      // Set redirecting state and redirect
+      setRedirecting(true)
+      router.replace('/dashboard')
       
     } catch (err) {
       console.error('Signin catch error:', err)

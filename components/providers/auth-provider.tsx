@@ -163,7 +163,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       async (event, session) => {
         if (!mounted) return
 
-        console.log('Auth state change:', event, session?.user?.email)
+        console.log('Auth state change:', event, session?.user?.email || 'no user')
+        console.log('Session data:', session)
+        console.log('User data:', session?.user)
 
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           if (session?.user) {

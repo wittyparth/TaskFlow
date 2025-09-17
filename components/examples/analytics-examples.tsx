@@ -142,7 +142,7 @@ export function AnalyticsExamples() {
             
             <RoleGate 
               roles={['admin', 'owner']} 
-              currentRole={profile?.role || 'user'}
+              currentRole={profile?.role === 'member' ? 'user' : (profile?.role as 'user' | 'admin' | 'owner') || 'user'}
               fallback={
                 <p className="text-sm text-muted-foreground">
                   Admin access required

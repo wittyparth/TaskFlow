@@ -24,7 +24,7 @@ export interface Database {
           full_name: string | null
           avatar_url: string | null
           subscription_tier: 'free' | 'pro' | 'enterprise'
-          role: 'user' | 'admin' | 'owner'
+          role: 'member' | 'admin' | 'owner'
           team_id: string | null
         }
         Insert: {
@@ -35,7 +35,7 @@ export interface Database {
           full_name?: string | null
           avatar_url?: string | null
           subscription_tier?: 'free' | 'pro' | 'enterprise'
-          role?: 'user' | 'admin' | 'owner'
+          role?: 'member' | 'admin' | 'owner'
           team_id?: string | null
         }
         Update: {
@@ -46,7 +46,7 @@ export interface Database {
           full_name?: string | null
           avatar_url?: string | null
           subscription_tier?: 'free' | 'pro' | 'enterprise'
-          role?: 'user' | 'admin' | 'owner'
+          role?: 'member' | 'admin' | 'owner'
           team_id?: string | null
         }
       }

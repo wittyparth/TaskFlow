@@ -15,6 +15,7 @@ import { useAnalytics } from "@/hooks/use-analytics"
 
 export default function SignUpPage() {
   const [currentStep, setCurrentStep] = useState(1)
+  const [message, setMessage] = useState("")
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -81,9 +82,35 @@ export default function SignUpPage() {
       }
 
       console.log('Signup successful:', data)
+      console.log('User data:', data.user)
+      console.log('Session data:', data.session)
       
-      // Redirect to email verification
-      router.push("/verify-email?email=" + encodeURIComponent(formData.email))
+      // Check if user and session were created successfully (no email verification)
+      if (data.user && data.session) {
+        console.log('✅ User created with immediate session - redirecting to dashboard')
+        
+        // Track successful signup
+        track('user_signed_up', {
+          method: 'email',
+          user_id: data.user.id,
+          user_email: data.user.email,
+        })
+        
+        setMessage('Account created successfully! Redirecting...')
+        router.push('/dashboard')
+        return
+      }
+      
+      // If no session but user exists, there might be an issue with Supabase config
+      if (data.user && !data.session) {
+        console.warn('⚠️ User created but no session - check Supabase email confirmation settings')
+        setError('Account created but automatic login failed. Please try signing in.')
+        return
+      }
+      
+      // If we get here, something unexpected happened
+      setError('Signup completed but something went wrong. Please try signing in.')
+      
     } catch (err) {
       console.error('Signup catch error:', err)
       setError("An unexpected error occurred")
